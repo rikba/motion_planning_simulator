@@ -1,11 +1,14 @@
+% A simple RRT motion planner
+
 classdef RRTPlanner
+%#codegen
     %RRTPlanner Summary of this class goes here
     %   Detailed explanation goes here
     
     properties
         % default start and goal [x y]
-        start = [0.2 0.5];
-        goal = [0.8 0.5];
+        start = [0.0 0.0];
+        goal = [0.8 0.2];
         
         % default state space [xmin xmax ymin ymax]
         space = [-1 1 -1 1];
@@ -14,7 +17,7 @@ classdef RRTPlanner
         N = 2000;
         
         % default edge length in meter
-        epsilon = 0.01;
+        epsilon = 0.1;
         
         % tree structure
         rrt = struct('vertices',[],'numvertices',[], ...
@@ -117,10 +120,10 @@ classdef RRTPlanner
                 end
             end
         end
- %% connect
+ %% rrt_connect
  % connects the sampled vertex and the nearest vertex depending on their
  % distance
-        function q_new = connect(self, q_nearest_idx, q_nearest_dist, q_rand)
+        function q_new = rrt_connect(self, q_nearest_idx, q_nearest_dist, q_rand)
             if(q_nearest_dist>self.epsilon)
                 q_new = self.rrt.vertices(q_nearest_idx,:) + ...
                     self.epsilon * ...
@@ -164,7 +167,7 @@ classdef RRTPlanner
                 % nearest neighbor
                 [q_nearest_idx, q_nearest_dist] = findNearestVertex(self, q_rand);
                 % connect
-                q_new = connect(self, q_nearest_idx, q_nearest_dist, q_rand);
+                q_new = rrt_connect(self, q_nearest_idx, q_nearest_dist, q_rand);
                 % addVertex
                 self.rrt.vertices(end+1,:) = addVertex(self,q_new);
                 self.rrt.numvertices = self.rrt.numvertices + 1;
